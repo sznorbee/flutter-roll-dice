@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:animated_flip_widget/animated_flip_widget.dart';
 
 final randomizer = Random();
+final controller = FlipController();
 
 class DiceRoller extends StatefulWidget {
   const DiceRoller({super.key});
@@ -14,9 +16,17 @@ class DiceRoller extends StatefulWidget {
 class _DiceRollerState extends State<DiceRoller> {
   var currentDiceRoll = 1;
   void rollDice() {
-    setState(() {
-      currentDiceRoll = randomizer.nextInt(6) + 1;
+    controller.flip();
+    // set 300ms delay to simulate dice roll
+    Future.delayed(const Duration(milliseconds: 300), () {
+      setState(() {
+        currentDiceRoll = randomizer.nextInt(6) + 1;
+      });
     });
+  }
+
+  int getRandomDiceRoll() {
+    return randomizer.nextInt(6) + 1;
   }
 
   @override
@@ -24,7 +34,15 @@ class _DiceRollerState extends State<DiceRoller> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Image.asset('assets/images/dice-$currentDiceRoll.png', width: 200),
+        AnimatedFlipWidget(
+          front: Image.asset('assets/images/dice-$currentDiceRoll.png',
+              width: 200),
+          back: Image.asset('assets/images/dice-$currentDiceRoll.png',
+              width: 200),
+          controller: controller,
+          clickable: false,
+          flipDuration: const Duration(milliseconds: 600),
+        ),
         const SizedBox(height: 20),
         TextButton(
             onPressed: rollDice,
